@@ -1,0 +1,10 @@
+{
+  "name": "shri-2020-homework-node-build-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "Gerasin Ivan <webartmotor@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">= v12.16.1"
+  }
+}
