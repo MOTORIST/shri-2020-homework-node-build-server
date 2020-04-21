@@ -5,8 +5,14 @@ const { PORT, ENV } = require('./config');
 const { AgentsStorage } = require('./agent-storage');
 const retry = require('./helpers/retry');
 const shriApi = require('./services/shri-api.service');
+const BuildsQueue = require('./builds-queue/builds.queue');
+const BuildServer = require('./services/build-server.service');
 
 const agentsStorage = new AgentsStorage();
+const buildsQueue = new BuildsQueue();
+const buildServer = new BuildServer(agentsStorage, buildsQueue);
+
+buildServer.run();
 
 const validationHandler = (req, res) => {
   const errors = validationResult(req);
@@ -63,6 +69,10 @@ app.post(
     return res.json({ data: { agentId, buildId, status, buildLog, duration } });
   },
 );
+
+app.get('/queue', (req, res) => {
+  return res.json({ data: [...buildsQueue.map.values()] });
+});
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

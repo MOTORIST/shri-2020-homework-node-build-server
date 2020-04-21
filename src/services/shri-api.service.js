@@ -49,7 +49,31 @@ async function buildFinish(buildId, duration, buildLog, success) {
   }
 }
 
+async function getConfig() {
+  try {
+    const { data } = await httpApi.get('conf');
+    return data;
+  } catch (error) {
+    const message = 'Failed to get repository configuration (SHRI API: GET / conf)';
+    console.error(message);
+    throw error;
+  }
+}
+
+async function getBuildList(offset = 0, limit = 25) {
+  try {
+    const { data } = await httpApi.get('build/list', { params: { offset, limit } });
+    return data;
+  } catch (error) {
+    const message = 'Failed to get build list (SHRI API: GET /build/list)';
+    console.error(message);
+    throw error;
+  }
+}
+
 module.exports = {
   buildStart,
   buildFinish,
+  getConfig,
+  getBuildList,
 };
