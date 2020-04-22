@@ -66,7 +66,7 @@ class BuildServer {
         break;
       }
 
-      this._assignBuildToAgent(agent.id).catch(console.error);
+      await this._assignBuildToAgent(agent.id).catch(console.error);
     }
   }
 
@@ -87,13 +87,14 @@ class BuildServer {
         return;
       }
 
+      this.buildQueue.dequeue();
+
       const { id, commitHash, buildCommand, repoName } = build;
 
       if (ENV === 'dev') {
         console.log('---ASSIGN BUILD TO AGENT SERVER---');
       }
 
-      this.buildQueue.dequeue();
       agentApi.build(agent, id, commitHash, buildCommand, repoName);
     } catch (error) {
       console.error(error);
