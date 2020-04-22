@@ -14,7 +14,7 @@ class AgentsStorage extends Map {
   }
 
   getNotBusy() {
-    return new Map([...this].filter((build) => build.status !== STATUS.NOT_BUSY));
+    return new Map([...this].filter((item) => item[1].status === STATUS.NOT_BUSY));
   }
 
   setNotBusy(id) {
