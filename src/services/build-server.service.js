@@ -83,21 +83,18 @@ class BuildServer {
       const isStartBuild = await this._startBuildRetry(build.id);
 
       if (!isStartBuild) {
+        this.agentsStorage.setNotBust(agentId);
         return;
       }
 
       const { id, commitHash, buildCommand, repoName } = build;
 
-      agentApi
-        .build(agent, id, commitHash, buildCommand, repoName)
-        .then(() => {
-          if (ENV === 'dev') {
-            console.log('---ASSIGN BUILD TO AGENT SERVER---');
-          }
-        })
-        .catch(console.error);
+      if (ENV === 'dev') {
+        console.log('---ASSIGN BUILD TO AGENT SERVER---');
+      }
 
       this.buildQueue.dequeue();
+      agentApi.build(agent, id, commitHash, buildCommand, repoName);
     } catch (error) {
       console.error(error);
     }
