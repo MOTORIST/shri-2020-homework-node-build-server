@@ -33,7 +33,10 @@ app.post(
     const { host, port } = req.body;
 
     validationHandler(req, res);
-    agentsStorage.register(host, port);
+
+    if (!agentsStorage.hasAgent(host, port)) {
+      agentsStorage.register(host, port);
+    }
 
     return res.json({ ok: true });
   },

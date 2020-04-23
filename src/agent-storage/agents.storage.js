@@ -13,6 +13,10 @@ class AgentsStorage extends Map {
     this.ee.emit('register', agent);
   }
 
+  hasAgent(host, port) {
+    return !!this.get(AgentModel.generateId(host, port));
+  }
+
   getNotBusy() {
     return new Map([...this].filter((item) => item[1].status === STATUS.NOT_BUSY));
   }

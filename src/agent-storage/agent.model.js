@@ -5,7 +5,7 @@ const STATUS = {
 
 class AgentModel {
   constructor({ host, port }) {
-    this.id = this._generateId(host, port);
+    this.id = AgentModel.generateId(host, port);
     this.host = host;
     this.port = port;
     this.status = STATUS.NOT_BUSY;
@@ -37,7 +37,7 @@ class AgentModel {
     return this;
   }
 
-  _generateId(host, port) {
+  static generateId(host, port) {
     return host + port;
   }
 }
