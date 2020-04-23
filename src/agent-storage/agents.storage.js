@@ -17,6 +17,10 @@ class AgentsStorage extends Map {
     return new Map([...this].filter((item) => item[1].status === STATUS.NOT_BUSY));
   }
 
+  getBusy() {
+    return new Map([...this].filter((item) => item[1].status === STATUS.BUSY));
+  }
+
   setNotBusy(id) {
     const agent = this.get(id);
 

@@ -80,7 +80,8 @@ class BuildServer {
     try {
       const build = this.buildQueue.first;
       this.agentsStorage.setBusy(agentId, build.id);
-      const isStartBuild = await this._startBuildRetry(build.id);
+      const isStartBuild =
+        build.status === 'InProgress' ? true : await this._startBuildRetry(build.id);
 
       if (!isStartBuild) {
         this.agentsStorage.setNotBust(agentId);
@@ -105,14 +106,26 @@ class BuildServer {
     return retry(shriApi.buildStart, 3, 1000, true)(buildId);
   }
 
-  async _loadWaitingBuilds() {
+  async _loadBuilds() {
     const { data: builds } = await shriApi.getBuildList(0, 25);
+    const isWaiting = (status) => status === 'Waiting';
+    const isInProgress = (status) => status === 'InProgress';
 
     if (!builds || builds.length === 0) {
       return null;
     }
 
-    return builds.filter((build) => build.status === 'Waiting');
+    const assignedBuildsIds = [...this.agentsStorage.getBusy().values()].map(
+      (agent) => agent.buildId,
+    );
+
+    const filteredBuilds = builds.filter(
+      (build) =>
+        (isWaiting(build.status) || isInProgress(build.status)) &&
+        !assignedBuildsIds.includes(build.id),
+    );
+
+    return filteredBuilds;
   }
 
   async _loadSetting() {
@@ -122,10 +135,10 @@ class BuildServer {
 
   async _fillQueue() {
     const loadSettingRetry = retry(this._loadSetting, 3, 1000, true);
-    const loadWaitingBuildsRetry = retry(this._loadWaitingBuilds, 3, 1000, true);
+    const loadBuildsRetry = retry(this._loadBuilds, 3, 1000, true);
 
     try {
-      const [settings, builds] = await Promise.all([loadSettingRetry(), loadWaitingBuildsRetry()]);
+      const [settings, builds] = await Promise.all([loadSettingRetry(), loadBuildsRetry()]);
 
       if (!settings || !builds) {
         return;
