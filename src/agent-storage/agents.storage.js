@@ -25,11 +25,11 @@ class AgentsStorage extends Map {
       return;
     }
 
-    this.get(id).status = STATUS.NOT_BUSY;
+    agent.removeBuild(id).setStatus(STATUS.NOT_BUSY);
     this.ee.emit('notBusy', id);
   }
 
-  setBusy(id) {
+  setBusy(id, buildId) {
     const agent = this.get(id);
 
     if (!agent) {
@@ -37,7 +37,8 @@ class AgentsStorage extends Map {
       return;
     }
 
-    this.get(id).status = STATUS.BUSY;
+    agent.assignBuild(buildId).setStatus(STATUS.BUSY);
+
     this.ee.emit('busy', id);
   }
 

@@ -79,7 +79,7 @@ class BuildServer {
 
     try {
       const build = this.buildQueue.first;
-      this.agentsStorage.setBusy(agentId);
+      this.agentsStorage.setBusy(agentId, build.id);
       const isStartBuild = await this._startBuildRetry(build.id);
 
       if (!isStartBuild) {
